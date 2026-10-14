@@ -151,6 +151,77 @@ enum DiskAnalyzerSupport {
         return true
     }
 
+    /// Puts a detached item back under `parent`, the inverse of `detach`,
+    /// for when a move to the Trash is undone.
+    static func attach(_ node: DiskNode, to parent: DiskNode) {
+        node.parent = parent
+        parent.children.append(node)
+        parent.children.sort(by: ordered)
+        var ancestor: DiskNode? = parent
+        while let current = ancestor {
+            current.size += node.size
+            current.fileCount += node.fileCount
+            if let grand = current.parent { grand.children.sort(by: ordered) }
+            ancestor = current.parent
+        }
+    }
+
+    /// Whether `node` still hangs from `root`, so actions on it reach the map.
+    static func isAttached(_ node: DiskNode, to root: DiskNode) -> Bool {
+        node === root || root.isAncestor(of: node)
+    }
+
+    /// Adds an item to a set of marked items without counting any byte twice:
+    /// marking a folder absorbs marks inside it, and an item inside a marked
+    /// folder is already covered.
+    static func marking(_ node: DiskNode, in marked: [DiskNode]) -> [DiskNode] {
+        guard !marked.contains(where: { $0 === node || $0.isAncestor(of: node) }) else { return marked }
+        return marked.filter { !node.isAncestor(of: $0) } + [node]
+    }
+
+    // MARK: - Rebuildable folders
+
+    /// Folders that developer tools recreate on their own, safe to remove
+    /// while the project that owns them is not being built.
+    enum Rebuildable: String, CaseIterable {
+        case nodeModules, derivedData, dartTool, gradle, pods, pythonCache, webBuildCache, deviceSupport
+
+        /// Matches by folder name, plus the parent where a name alone would
+        /// be too common to trust.
+        static func match(name: String, parentName: String?) -> Rebuildable? {
+            switch name {
+            case "node_modules": return .nodeModules
+            case "DerivedData": return parentName == "Xcode" ? .derivedData : nil
+            case ".dart_tool": return .dartTool
+            case ".gradle": return .gradle
+            case "Pods": return .pods
+            case "__pycache__": return .pythonCache
+            case ".next", ".nuxt", ".turbo", ".parcel-cache", ".svelte-kit", ".angular": return .webBuildCache
+            case "iOS DeviceSupport", "watchOS DeviceSupport", "tvOS DeviceSupport", "visionOS DeviceSupport":
+                return parentName == "Xcode" ? .deviceSupport : nil
+            default: return nil
+            }
+        }
+    }
+
+    /// The outermost rebuildable folders below `root`, largest first. A match
+    /// is not searched inside, so nested node_modules are not listed twice.
+    static func rebuildableFolders(in root: DiskNode, minimumSize: Int64 = 1 << 20)
+        -> [(node: DiskNode, kind: Rebuildable)] {
+        var found: [(node: DiskNode, kind: Rebuildable)] = []
+        var stack: [DiskNode] = [root]
+        while let node = stack.popLast() {
+            for child in node.children where child.kind == .directory && child.size >= minimumSize {
+                if let kind = Rebuildable.match(name: child.name, parentName: node.name) {
+                    found.append((child, kind))
+                } else {
+                    stack.append(child)
+                }
+            }
+        }
+        return found.sorted { $0.node.size > $1.node.size }
+    }
+
     /// Swaps a freshly scanned copy of a directory into the tree in place.
     static func replace(_ old: DiskNode, with fresh: DiskNode) {
         guard let parent = old.parent,

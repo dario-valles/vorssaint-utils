@@ -10,6 +10,8 @@ enum DiskAnalyzerTests {
         settling(suite)
         editing(suite)
         geometry(suite)
+        marking(suite)
+        rebuildable(suite)
         scope(suite)
         scanning(suite)
         strings(suite)
@@ -113,6 +115,64 @@ enum DiskAnalyzerTests {
         suite.expect(largest.map(\.name) == ["big", "top", "mid"],
                      "the largest-files list searches the whole subtree, biggest first")
         suite.expect(DiskAnalyzerSupport.largestFiles(in: tree, limit: 0).isEmpty, "a zero limit lists nothing")
+    }
+
+    private static func marking(_ suite: TestSuite) {
+        let movie = file("movie.mov", 5000)
+        let note = file("note.txt", 100)
+        let inner = folder("Projects", [movie, note])
+        let other = file("other.zip", 900)
+        let root = folder("home", [inner, other])
+        settleAll(root)
+
+        DiskAnalyzerSupport.detach(movie)
+        suite.expect(!DiskAnalyzerSupport.isAttached(movie, to: root) && root.size == 1000,
+                     "a trashed item leaves the map")
+        DiskAnalyzerSupport.attach(movie, to: inner)
+        suite.expect(DiskAnalyzerSupport.isAttached(movie, to: root) && root.size == 6000
+                     && inner.size == 5100 && root.fileCount == 3 && inner.children.first === movie
+                     && root.children.first === inner,
+                     "undoing a removal puts the bytes back on every ancestor in size order")
+
+        var marked = DiskAnalyzerSupport.marking(note, in: [])
+        marked = DiskAnalyzerSupport.marking(other, in: marked)
+        suite.expect(marked.count == 2, "separate items can be marked together")
+        marked = DiskAnalyzerSupport.marking(inner, in: marked)
+        suite.expect(marked.count == 2 && marked.contains { $0 === inner } && !marked.contains { $0 === note },
+                     "marking a folder absorbs the marks inside it, so no byte counts twice")
+        suite.expect(DiskAnalyzerSupport.marking(movie, in: marked).count == 2,
+                     "an item inside a marked folder is already covered")
+        suite.expect(DiskAnalyzerSupport.marking(other, in: marked).count == 2,
+                     "marking an item twice keeps one mark")
+    }
+
+    private static func rebuildable(_ suite: TestSuite) {
+        typealias R = DiskAnalyzerSupport.Rebuildable
+        suite.expect(R.match(name: "node_modules", parentName: "app") == .nodeModules
+                     && R.match(name: ".next", parentName: "site") == .webBuildCache
+                     && R.match(name: "__pycache__", parentName: "pkg") == .pythonCache,
+                     "well-known tool folders are recognised by name")
+        suite.expect(R.match(name: "DerivedData", parentName: "Xcode") == .derivedData
+                     && R.match(name: "DerivedData", parentName: "Backups") == nil
+                     && R.match(name: "iOS DeviceSupport", parentName: "Xcode") == .deviceSupport
+                     && R.match(name: "iOS DeviceSupport", parentName: "Docs") == nil,
+                     "names that could mean anything only count in their usual parent")
+        suite.expect(R.match(name: "build", parentName: "app") == nil && R.match(name: "Documents", parentName: nil) == nil,
+                     "ambiguous or personal folder names are never suggested")
+
+        let big = Int64(4 << 20)
+        let nested = folder("node_modules", [file("x.js", big)])
+        let outer = folder("node_modules", [folder("dep", [nested]), file("y.js", big)])
+        let cache = folder(".dart_tool", [file("z", big * 3)])
+        let tiny = folder("__pycache__", [file("c.pyc", 10)])
+        let project = folder("app", [outer, cache, tiny, file("main.dart", big)])
+        let root = folder("code", [project])
+        settleAll(root)
+        let found = DiskAnalyzerSupport.rebuildableFolders(in: root)
+        suite.expect(found.map(\.node.name) == [".dart_tool", "node_modules"] && found.first?.kind == .dartTool,
+                     "suggestions list the outermost matches, largest first")
+        suite.expect(!found.contains { $0.node === nested } && !found.contains { $0.node === tiny },
+                     "nested matches and folders under the minimum size are left out")
     }
 
     private static func geometry(_ suite: TestSuite) {

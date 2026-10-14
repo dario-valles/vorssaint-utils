@@ -45,10 +45,32 @@ final class DiskAnalyzerService: ObservableObject {
     /// Bumped whenever the tree changes in place, so views redraw.
     @Published private(set) var revision = 0
     @Published private(set) var rescanning = false
+    /// The item the action bar works on; nil means the focused folder.
+    @Published var selected: DiskNode?
+    /// Items set aside to go to the Trash together, never overlapping.
+    @Published private(set) var marked: [DiskNode] = []
+    /// The last move to the Trash, kept so it can be undone.
+    @Published private(set) var lastTrash: TrashReceipt?
+
+    struct TrashReceipt: Identifiable {
+        struct Entry {
+            let node: DiskNode
+            let parent: DiskNode
+            let original: URL
+            let trashed: URL?
+        }
+
+        let id = UUID()
+        let entries: [Entry]
+        let failed: [String]
+        var bytes: Int64 { entries.reduce(0) { $0 + $1.node.size } }
+    }
 
     private var scanner: DiskAnalyzerScanner?
     private var rescanner: DiskAnalyzerScanner?
     private var largestCache: (focus: ObjectIdentifier, revision: Int, files: [DiskNode])?
+    private var rebuildableCache: (focus: ObjectIdentifier, revision: Int,
+                                   folders: [(node: DiskNode, kind: DiskAnalyzerSupport.Rebuildable)])?
     private var progressTimer: Timer?
     private var generation = 0
 
@@ -104,6 +126,7 @@ final class DiskAnalyzerService: ObservableObject {
         self.target = target
         root = nil
         focus = nil
+        clearInteraction()
         progress = .init()
         phase = .scanning
         let started = Date()
@@ -147,7 +170,7 @@ final class DiskAnalyzerService: ObservableObject {
     /// Forgets the map and returns to the volume picker.
     func reset() {
         cancel()
-        largestCache = nil
+        clearInteraction()
         root = nil
         focus = nil
         target = nil
@@ -191,6 +214,7 @@ final class DiskAnalyzerService: ObservableObject {
                     self.focus = Self.descend(replacement, through: relative)
                 }
                 self.revision += 1
+                self.pruneDetached()
             }
         }
     }
@@ -199,11 +223,13 @@ final class DiskAnalyzerService: ObservableObject {
 
     func focus(on node: DiskNode) {
         guard node.kind == .directory, node.size > 0 else { return }
+        selected = nil
         focus = node
     }
 
     func focusParent() {
         guard let parent = focus?.parent else { return }
+        selected = nil
         focus = parent
     }
 
@@ -233,26 +259,129 @@ final class DiskAnalyzerService: ObservableObject {
         return DiskAnalyzerSupport.isTrashable(path: node.path, home: NSHomeDirectory())
     }
 
-    /// Moves items to the Trash and takes them off the map. Returns the bytes
-    /// that left the map and the names that could not be moved.
+    /// Opens Terminal in a folder, or in the folder holding a file.
+    func openInTerminal(_ node: DiskNode) {
+        guard node.isFileSystemItem,
+              let terminal = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Terminal")
+        else { return }
+        let folder = node.isDirectory ? node.url : node.url.deletingLastPathComponent()
+        NSWorkspace.shared.open([folder], withApplicationAt: terminal, configuration: NSWorkspace.OpenConfiguration())
+    }
+
+    // MARK: - Marking
+
+    func isMarked(_ node: DiskNode) -> Bool {
+        marked.contains { $0 === node }
+    }
+
+    /// Inside a marked folder, so it already goes with it.
+    func isCoveredByMark(_ node: DiskNode) -> Bool {
+        marked.contains { $0.isAncestor(of: node) }
+    }
+
+    var markedBytes: Int64 { marked.reduce(0) { $0 + $1.size } }
+
+    func toggleMark(_ node: DiskNode) {
+        if isMarked(node) {
+            marked.removeAll { $0 === node }
+        } else if canTrash(node) {
+            marked = DiskAnalyzerSupport.marking(node, in: marked)
+        }
+    }
+
+    func clearMarks() {
+        marked = []
+    }
+
+    // MARK: - Trash
+
+    /// Moves items to the Trash, takes them off the map and keeps a receipt
+    /// so the move can be undone.
     @discardableResult
-    func moveToTrash(_ nodes: [DiskNode]) -> (freed: Int64, failed: [String]) {
-        var freed: Int64 = 0
+    func moveToTrash(_ nodes: [DiskNode]) -> TrashReceipt {
+        var entries: [TrashReceipt.Entry] = []
         var failed: [String] = []
         for node in nodes where canTrash(node) {
+            guard let parent = node.parent else { continue }
+            let original = node.url
+            var resulting: NSURL?
             do {
-                try FileManager.default.trashItem(at: node.url, resultingItemURL: nil)
-                freed += node.size
+                try FileManager.default.trashItem(at: original, resultingItemURL: &resulting)
                 if focus.map({ $0 === node || node.isAncestor(of: $0) }) == true {
-                    focus = node.parent
+                    focus = parent
                 }
                 DiskAnalyzerSupport.detach(node)
+                entries.append(.init(node: node, parent: parent, original: original,
+                                     trashed: resulting as URL?))
             } catch {
                 failed.append(node.name)
             }
         }
-        if freed > 0 { revision += 1 }
-        return (freed, failed)
+        let receipt = TrashReceipt(entries: entries, failed: failed)
+        if !entries.isEmpty {
+            revision += 1
+            lastTrash = receipt
+            pruneDetached()
+        }
+        return receipt
+    }
+
+    /// Puts the last trashed items back where they were and onto the map.
+    /// Returns the names that could not be restored.
+    @discardableResult
+    func undoLastTrash() -> [String] {
+        guard let receipt = lastTrash else { return [] }
+        lastTrash = nil
+        var failed: [String] = []
+        for entry in receipt.entries.reversed() {
+            guard let trashed = entry.trashed,
+                  (try? FileManager.default.moveItem(at: trashed, to: entry.original)) != nil else {
+                failed.append(entry.node.name)
+                continue
+            }
+            if let root, DiskAnalyzerSupport.isAttached(entry.parent, to: root) {
+                DiskAnalyzerSupport.attach(entry.node, to: entry.parent)
+            }
+        }
+        revision += 1
+        return failed
+    }
+
+    func dismissTrashReceipt() {
+        lastTrash = nil
+    }
+
+    func openTrash() {
+        let trash = FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".Trash")
+        NSWorkspace.shared.open(trash)
+    }
+
+    /// Rebuildable developer folders below `node` that may be trashed,
+    /// kept until the node or the tree changes.
+    func rebuildableFolders(in node: DiskNode) -> [(node: DiskNode, kind: DiskAnalyzerSupport.Rebuildable)] {
+        let key = ObjectIdentifier(node)
+        if let cached = rebuildableCache, cached.focus == key, cached.revision == revision {
+            return cached.folders
+        }
+        let folders = DiskAnalyzerSupport.rebuildableFolders(in: node).filter { canTrash($0.node) }
+        rebuildableCache = (key, revision, folders)
+        return folders
+    }
+
+    /// Drops marks and the selection that no longer hang from the map.
+    private func pruneDetached() {
+        guard let root else { return }
+        marked.removeAll { !DiskAnalyzerSupport.isAttached($0, to: root) }
+        if let selected, !DiskAnalyzerSupport.isAttached(selected, to: root) { self.selected = nil }
+    }
+
+    private func clearInteraction() {
+        largestCache = nil
+        rebuildableCache = nil
+        selected = nil
+        marked = []
+        lastTrash = nil
     }
 
     // MARK: - Helpers

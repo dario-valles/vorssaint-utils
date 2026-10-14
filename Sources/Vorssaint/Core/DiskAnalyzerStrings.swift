@@ -43,6 +43,30 @@ struct DiskAnalyzerFeatureStrings {
     let cloudOnlyHelp: String
     let collapsedHelp: String
     let scanFailed: String
+    let quickLook: String
+    let openInTerminal: String
+    let mark: String
+    let unmark: String
+    let markAll: String
+    let markedFormat: String
+    let review: String
+    let clearMarks: String
+    let trashManyTitleFormat: String
+    let movedFormat: String
+    let undo: String
+    let openTrash: String
+    let undoFailedFormat: String
+    let suggestions: String
+    let suggestionsHint: String
+    let suggestionsEmpty: String
+    let rebuildNodeModules: String
+    let rebuildDerivedData: String
+    let rebuildDartTool: String
+    let rebuildGradle: String
+    let rebuildPods: String
+    let rebuildPythonCache: String
+    let rebuildWebCache: String
+    let rebuildDeviceSupport: String
 }
 
 extension FeatureStrings {
@@ -107,7 +131,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "This folder could not be read.",
         cloudOnlyHelp: "Stored in iCloud and not downloaded, so it takes no space here.",
         collapsedHelp: "A small folder: its contents are counted but not mapped.",
-        scanFailed: "This location could not be read."
+        scanFailed: "This location could not be read.",
+        quickLook: "Quick Look",
+        openInTerminal: "Open in Terminal",
+        mark: "Mark for Trash",
+        unmark: "Unmark",
+        markAll: "Mark All",
+        markedFormat: "%@ marked · %@",
+        review: "Review",
+        clearMarks: "Clear",
+        trashManyTitleFormat: "Move %@ items to the Trash?",
+        movedFormat: "%@ moved to the Trash",
+        undo: "Undo",
+        openTrash: "Open Trash",
+        undoFailedFormat: "“%@” could not be put back.",
+        suggestions: "Suggestions",
+        suggestionsHint: "Folders that developer tools rebuild on their own. Safe to remove while their project is not running.",
+        suggestionsEmpty: "No rebuildable folders found here",
+        rebuildNodeModules: "Reinstalled by npm, yarn or pnpm",
+        rebuildDerivedData: "Rebuilt by Xcode on the next build",
+        rebuildDartTool: "Recreated by Dart and Flutter",
+        rebuildGradle: "Downloaded again by Gradle",
+        rebuildPods: "Reinstalled by pod install",
+        rebuildPythonCache: "Recompiled by Python",
+        rebuildWebCache: "Rebuilt by the web framework",
+        rebuildDeviceSupport: "Copied again when a device connects"
     )
 
     static let ptBR = DiskAnalyzerFeatureStrings(
@@ -149,7 +197,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Não foi possível ler esta pasta.",
         cloudOnlyHelp: "Armazenado no iCloud e não baixado, então não ocupa espaço aqui.",
         collapsedHelp: "Pasta pequena: o conteúdo é contado, mas não mapeado.",
-        scanFailed: "Não foi possível ler este local."
+        scanFailed: "Não foi possível ler este local.",
+        quickLook: "Visualização rápida",
+        openInTerminal: "Abrir no Terminal",
+        mark: "Marcar para o Lixo",
+        unmark: "Desmarcar",
+        markAll: "Marcar tudo",
+        markedFormat: "%@ marcados · %@",
+        review: "Revisar",
+        clearMarks: "Limpar",
+        trashManyTitleFormat: "Mover %@ itens para o Lixo?",
+        movedFormat: "%@ movidos para o Lixo",
+        undo: "Desfazer",
+        openTrash: "Abrir Lixo",
+        undoFailedFormat: "Não foi possível devolver “%@” ao local original.",
+        suggestions: "Sugestões",
+        suggestionsHint: "Pastas que as ferramentas de desenvolvimento recriam sozinhas. Podem ser removidas enquanto o projeto não estiver em execução.",
+        suggestionsEmpty: "Nenhuma pasta recriável encontrada aqui",
+        rebuildNodeModules: "Reinstalado pelo npm, yarn ou pnpm",
+        rebuildDerivedData: "Recriado pelo Xcode na próxima compilação",
+        rebuildDartTool: "Recriado pelo Dart e Flutter",
+        rebuildGradle: "Baixado novamente pelo Gradle",
+        rebuildPods: "Reinstalado pelo pod install",
+        rebuildPythonCache: "Recompilado pelo Python",
+        rebuildWebCache: "Recriado pelo framework web",
+        rebuildDeviceSupport: "Copiado novamente quando um dispositivo é conectado"
     )
 
     static let tr = DiskAnalyzerFeatureStrings(
@@ -191,7 +263,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Bu klasör okunamadı.",
         cloudOnlyHelp: "iCloud’da saklanıyor ve indirilmedi, bu yüzden burada yer kaplamıyor.",
         collapsedHelp: "Küçük klasör: içeriği sayılır ancak haritada gösterilmez.",
-        scanFailed: "Bu konum okunamadı."
+        scanFailed: "Bu konum okunamadı.",
+        quickLook: "Hızlı Bakış",
+        openInTerminal: "Terminal’de aç",
+        mark: "Çöp Sepeti için işaretle",
+        unmark: "İşareti kaldır",
+        markAll: "Tümünü işaretle",
+        markedFormat: "%@ işaretli · %@",
+        review: "Gözden geçir",
+        clearMarks: "Temizle",
+        trashManyTitleFormat: "%@ öğe Çöp Sepeti’ne taşınsın mı?",
+        movedFormat: "%@ Çöp Sepeti’ne taşındı",
+        undo: "Geri al",
+        openTrash: "Çöp Sepeti’ni aç",
+        undoFailedFormat: "“%@” geri konamadı.",
+        suggestions: "Öneriler",
+        suggestionsHint: "Geliştirici araçlarının kendiliğinden yeniden oluşturduğu klasörler. Projeleri çalışmıyorken silinebilir.",
+        suggestionsEmpty: "Burada yeniden oluşturulabilir klasör yok",
+        rebuildNodeModules: "npm, yarn veya pnpm yeniden kurar",
+        rebuildDerivedData: "Xcode bir sonraki derlemede yeniden oluşturur",
+        rebuildDartTool: "Dart ve Flutter yeniden oluşturur",
+        rebuildGradle: "Gradle yeniden indirir",
+        rebuildPods: "pod install yeniden kurar",
+        rebuildPythonCache: "Python yeniden derler",
+        rebuildWebCache: "Web çatısı yeniden oluşturur",
+        rebuildDeviceSupport: "Bir aygıt bağlandığında yeniden kopyalanır"
     )
 
     static let ru = DiskAnalyzerFeatureStrings(
@@ -233,7 +329,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Не удалось прочитать эту папку.",
         cloudOnlyHelp: "Хранится в iCloud и не загружено, поэтому здесь не занимает места.",
         collapsedHelp: "Маленькая папка: её содержимое учтено, но не показано на карте.",
-        scanFailed: "Не удалось прочитать это место."
+        scanFailed: "Не удалось прочитать это место.",
+        quickLook: "Быстрый просмотр",
+        openInTerminal: "Открыть в Терминале",
+        mark: "Отметить для Корзины",
+        unmark: "Снять отметку",
+        markAll: "Отметить все",
+        markedFormat: "Отмечено: %@ · %@",
+        review: "Просмотреть",
+        clearMarks: "Очистить",
+        trashManyTitleFormat: "Переместить объекты (%@) в Корзину?",
+        movedFormat: "В Корзину перемещено %@",
+        undo: "Вернуть",
+        openTrash: "Открыть Корзину",
+        undoFailedFormat: "Не удалось вернуть «%@» на место.",
+        suggestions: "Рекомендации",
+        suggestionsHint: "Папки, которые инструменты разработки создают заново сами. Их можно удалить, пока проект не запущен.",
+        suggestionsEmpty: "Здесь нет папок, которые можно пересоздать",
+        rebuildNodeModules: "Переустанавливается через npm, yarn или pnpm",
+        rebuildDerivedData: "Xcode пересоздаст при следующей сборке",
+        rebuildDartTool: "Пересоздаётся Dart и Flutter",
+        rebuildGradle: "Gradle загрузит заново",
+        rebuildPods: "Переустанавливается через pod install",
+        rebuildPythonCache: "Python скомпилирует заново",
+        rebuildWebCache: "Фреймворк пересоздаст при сборке",
+        rebuildDeviceSupport: "Копируется заново при подключении устройства"
     )
 
     static let es = DiskAnalyzerFeatureStrings(
@@ -275,7 +395,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "No se pudo leer esta carpeta.",
         cloudOnlyHelp: "Guardado en iCloud y sin descargar, así que aquí no ocupa espacio.",
         collapsedHelp: "Carpeta pequeña: su contenido se cuenta, pero no se mapea.",
-        scanFailed: "No se pudo leer esta ubicación."
+        scanFailed: "No se pudo leer esta ubicación.",
+        quickLook: "Vista rápida",
+        openInTerminal: "Abrir en Terminal",
+        mark: "Marcar para la papelera",
+        unmark: "Desmarcar",
+        markAll: "Marcar todo",
+        markedFormat: "%@ marcados · %@",
+        review: "Revisar",
+        clearMarks: "Limpiar",
+        trashManyTitleFormat: "¿Mover %@ elementos a la papelera?",
+        movedFormat: "%@ movidos a la papelera",
+        undo: "Deshacer",
+        openTrash: "Abrir papelera",
+        undoFailedFormat: "No se pudo devolver «%@» a su sitio.",
+        suggestions: "Sugerencias",
+        suggestionsHint: "Carpetas que las herramientas de desarrollo regeneran solas. Puedes borrarlas mientras su proyecto no esté en marcha.",
+        suggestionsEmpty: "No hay carpetas regenerables aquí",
+        rebuildNodeModules: "Las reinstala npm, yarn o pnpm",
+        rebuildDerivedData: "Xcode la regenera en la próxima compilación",
+        rebuildDartTool: "La recrean Dart y Flutter",
+        rebuildGradle: "Gradle la vuelve a descargar",
+        rebuildPods: "Las reinstala pod install",
+        rebuildPythonCache: "Python los vuelve a compilar",
+        rebuildWebCache: "La regenera el framework web",
+        rebuildDeviceSupport: "Se copian de nuevo al conectar un dispositivo"
     )
 
     static let sk = DiskAnalyzerFeatureStrings(
@@ -317,7 +461,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Tento priečinok sa nepodarilo prečítať.",
         cloudOnlyHelp: "Uložené v iCloude a nestiahnuté, takže tu nezaberá miesto.",
         collapsedHelp: "Malý priečinok: jeho obsah sa započíta, ale nezobrazí.",
-        scanFailed: "Toto umiestnenie sa nepodarilo prečítať."
+        scanFailed: "Toto umiestnenie sa nepodarilo prečítať.",
+        quickLook: "Rýchly náhľad",
+        openInTerminal: "Otvoriť v Termináli",
+        mark: "Označiť na vyhodenie",
+        unmark: "Zrušiť označenie",
+        markAll: "Označiť všetko",
+        markedFormat: "Označené: %@ · %@",
+        review: "Skontrolovať",
+        clearMarks: "Vymazať",
+        trashManyTitleFormat: "Presunúť položky (%@) do koša?",
+        movedFormat: "Do koša presunuté: %@",
+        undo: "Späť",
+        openTrash: "Otvoriť kôš",
+        undoFailedFormat: "„%@“ sa nepodarilo vrátiť späť.",
+        suggestions: "Návrhy",
+        suggestionsHint: "Priečinky, ktoré si vývojárske nástroje vytvoria samy. Môžete ich odstrániť, keď projekt nebeží.",
+        suggestionsEmpty: "Nenašli sa tu žiadne obnoviteľné priečinky",
+        rebuildNodeModules: "Znova nainštaluje npm, yarn alebo pnpm",
+        rebuildDerivedData: "Xcode ich vytvorí pri ďalšom zostavení",
+        rebuildDartTool: "Znova vytvorí Dart a Flutter",
+        rebuildGradle: "Gradle ich znova stiahne",
+        rebuildPods: "Znova nainštaluje pod install",
+        rebuildPythonCache: "Python ich znova skompiluje",
+        rebuildWebCache: "Webový framework ich znova vytvorí",
+        rebuildDeviceSupport: "Skopírujú sa znova po pripojení zariadenia"
     )
 
     static let de = DiskAnalyzerFeatureStrings(
@@ -359,7 +527,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Dieser Ordner konnte nicht gelesen werden.",
         cloudOnlyHelp: "In iCloud gespeichert und nicht geladen, belegt hier also keinen Platz.",
         collapsedHelp: "Kleiner Ordner: Sein Inhalt wird gezählt, aber nicht dargestellt.",
-        scanFailed: "Dieser Ort konnte nicht gelesen werden."
+        scanFailed: "Dieser Ort konnte nicht gelesen werden.",
+        quickLook: "Übersicht",
+        openInTerminal: "Im Terminal öffnen",
+        mark: "Zum Löschen markieren",
+        unmark: "Markierung entfernen",
+        markAll: "Alle markieren",
+        markedFormat: "%@ markiert · %@",
+        review: "Prüfen",
+        clearMarks: "Zurücksetzen",
+        trashManyTitleFormat: "%@ Objekte in den Papierkorb legen?",
+        movedFormat: "%@ in den Papierkorb gelegt",
+        undo: "Widerrufen",
+        openTrash: "Papierkorb öffnen",
+        undoFailedFormat: "„%@“ konnte nicht zurückgelegt werden.",
+        suggestions: "Vorschläge",
+        suggestionsHint: "Ordner, die Entwicklerwerkzeuge von selbst neu erstellen. Sie können entfernt werden, solange das Projekt nicht läuft.",
+        suggestionsEmpty: "Hier gibt es keine neu erstellbaren Ordner",
+        rebuildNodeModules: "Wird von npm, yarn oder pnpm neu installiert",
+        rebuildDerivedData: "Wird von Xcode beim nächsten Build neu erstellt",
+        rebuildDartTool: "Wird von Dart und Flutter neu erstellt",
+        rebuildGradle: "Wird von Gradle neu geladen",
+        rebuildPods: "Wird von pod install neu installiert",
+        rebuildPythonCache: "Wird von Python neu kompiliert",
+        rebuildWebCache: "Wird vom Web-Framework neu erstellt",
+        rebuildDeviceSupport: "Wird beim Verbinden eines Geräts neu kopiert"
     )
 
     static let fr = DiskAnalyzerFeatureStrings(
@@ -401,7 +593,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Ce dossier n’a pas pu être lu.",
         cloudOnlyHelp: "Stocké dans iCloud et non téléchargé, il n’occupe donc pas d’espace ici.",
         collapsedHelp: "Petit dossier : son contenu est compté mais pas cartographié.",
-        scanFailed: "Cet emplacement n’a pas pu être lu."
+        scanFailed: "Cet emplacement n’a pas pu être lu.",
+        quickLook: "Coup d’œil",
+        openInTerminal: "Ouvrir dans Terminal",
+        mark: "Marquer pour la corbeille",
+        unmark: "Retirer la marque",
+        markAll: "Tout marquer",
+        markedFormat: "%@ marqués · %@",
+        review: "Vérifier",
+        clearMarks: "Effacer",
+        trashManyTitleFormat: "Placer %@ éléments dans la corbeille ?",
+        movedFormat: "%@ placés dans la corbeille",
+        undo: "Annuler",
+        openTrash: "Ouvrir la corbeille",
+        undoFailedFormat: "Impossible de remettre « %@ » à sa place.",
+        suggestions: "Suggestions",
+        suggestionsHint: "Dossiers que les outils de développement recréent d’eux-mêmes. Vous pouvez les supprimer tant que leur projet ne tourne pas.",
+        suggestionsEmpty: "Aucun dossier recréable ici",
+        rebuildNodeModules: "Réinstallé par npm, yarn ou pnpm",
+        rebuildDerivedData: "Recréé par Xcode à la prochaine compilation",
+        rebuildDartTool: "Recréé par Dart et Flutter",
+        rebuildGradle: "Retéléchargé par Gradle",
+        rebuildPods: "Réinstallé par pod install",
+        rebuildPythonCache: "Recompilé par Python",
+        rebuildWebCache: "Recréé par le framework web",
+        rebuildDeviceSupport: "Recopié à la connexion d’un appareil"
     )
 
     static let it = DiskAnalyzerFeatureStrings(
@@ -443,7 +659,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Impossibile leggere questa cartella.",
         cloudOnlyHelp: "Archiviato su iCloud e non scaricato, quindi qui non occupa spazio.",
         collapsedHelp: "Cartella piccola: il contenuto è conteggiato ma non mappato.",
-        scanFailed: "Impossibile leggere questa posizione."
+        scanFailed: "Impossibile leggere questa posizione.",
+        quickLook: "Visualizzazione rapida",
+        openInTerminal: "Apri nel Terminale",
+        mark: "Segna per il Cestino",
+        unmark: "Rimuovi segno",
+        markAll: "Segna tutto",
+        markedFormat: "%@ segnati · %@",
+        review: "Rivedi",
+        clearMarks: "Azzera",
+        trashManyTitleFormat: "Spostare %@ elementi nel Cestino?",
+        movedFormat: "%@ spostati nel Cestino",
+        undo: "Annulla",
+        openTrash: "Apri Cestino",
+        undoFailedFormat: "Impossibile rimettere “%@” al suo posto.",
+        suggestions: "Suggerimenti",
+        suggestionsHint: "Cartelle che gli strumenti di sviluppo ricreano da soli. Si possono rimuovere finché il progetto non è in esecuzione.",
+        suggestionsEmpty: "Nessuna cartella ricreabile qui",
+        rebuildNodeModules: "Reinstallato da npm, yarn o pnpm",
+        rebuildDerivedData: "Ricreato da Xcode alla prossima build",
+        rebuildDartTool: "Ricreato da Dart e Flutter",
+        rebuildGradle: "Riscaricato da Gradle",
+        rebuildPods: "Reinstallato da pod install",
+        rebuildPythonCache: "Ricompilato da Python",
+        rebuildWebCache: "Ricreato dal framework web",
+        rebuildDeviceSupport: "Ricopiato quando si collega un dispositivo"
     )
 
     static let ja = DiskAnalyzerFeatureStrings(
@@ -485,7 +725,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "このフォルダを読み取れませんでした。",
         cloudOnlyHelp: "iCloudに保存されていてダウンロードされていないため、ここでは容量を使用しません。",
         collapsedHelp: "小さなフォルダです。内容は集計されますが、マップには表示されません。",
-        scanFailed: "この場所を読み取れませんでした。"
+        scanFailed: "この場所を読み取れませんでした。",
+        quickLook: "クイックルック",
+        openInTerminal: "ターミナルで開く",
+        mark: "ゴミ箱用にマーク",
+        unmark: "マークを外す",
+        markAll: "すべてマーク",
+        markedFormat: "%@ 件をマーク · %@",
+        review: "確認",
+        clearMarks: "クリア",
+        trashManyTitleFormat: "%@ 件の項目をゴミ箱に入れますか？",
+        movedFormat: "%@ をゴミ箱に入れました",
+        undo: "取り消す",
+        openTrash: "ゴミ箱を開く",
+        undoFailedFormat: "“%@”を元に戻せませんでした。",
+        suggestions: "候補",
+        suggestionsHint: "開発ツールが自動で再作成するフォルダです。プロジェクトを実行していないときは削除できます。",
+        suggestionsEmpty: "再作成できるフォルダはありません",
+        rebuildNodeModules: "npm、yarn、pnpmが再インストールします",
+        rebuildDerivedData: "次回のビルドでXcodeが再作成します",
+        rebuildDartTool: "DartとFlutterが再作成します",
+        rebuildGradle: "Gradleが再ダウンロードします",
+        rebuildPods: "pod installが再インストールします",
+        rebuildPythonCache: "Pythonが再コンパイルします",
+        rebuildWebCache: "Webフレームワークが再作成します",
+        rebuildDeviceSupport: "デバイスを接続すると再びコピーされます"
     )
 
     static let ko = DiskAnalyzerFeatureStrings(
@@ -527,7 +791,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "이 폴더를 읽을 수 없습니다.",
         cloudOnlyHelp: "iCloud에 저장되어 있고 다운로드되지 않았으므로 여기서는 공간을 차지하지 않습니다.",
         collapsedHelp: "작은 폴더입니다. 내용은 집계되지만 지도에는 표시되지 않습니다.",
-        scanFailed: "이 위치를 읽을 수 없습니다."
+        scanFailed: "이 위치를 읽을 수 없습니다.",
+        quickLook: "훑어보기",
+        openInTerminal: "터미널에서 열기",
+        mark: "휴지통용으로 표시",
+        unmark: "표시 해제",
+        markAll: "모두 표시",
+        markedFormat: "%@개 표시됨 · %@",
+        review: "검토",
+        clearMarks: "지우기",
+        trashManyTitleFormat: "항목 %@개를 휴지통으로 이동할까요?",
+        movedFormat: "%@이(가) 휴지통으로 이동됨",
+        undo: "실행 취소",
+        openTrash: "휴지통 열기",
+        undoFailedFormat: "“%@”을(를) 되돌릴 수 없습니다.",
+        suggestions: "제안",
+        suggestionsHint: "개발 도구가 스스로 다시 만드는 폴더입니다. 프로젝트를 실행하지 않을 때 삭제해도 됩니다.",
+        suggestionsEmpty: "다시 만들 수 있는 폴더가 없습니다",
+        rebuildNodeModules: "npm, yarn 또는 pnpm이 다시 설치합니다",
+        rebuildDerivedData: "다음 빌드 때 Xcode가 다시 만듭니다",
+        rebuildDartTool: "Dart와 Flutter가 다시 만듭니다",
+        rebuildGradle: "Gradle이 다시 다운로드합니다",
+        rebuildPods: "pod install이 다시 설치합니다",
+        rebuildPythonCache: "Python이 다시 컴파일합니다",
+        rebuildWebCache: "웹 프레임워크가 다시 만듭니다",
+        rebuildDeviceSupport: "기기를 연결하면 다시 복사됩니다"
     )
 
     static let uk = DiskAnalyzerFeatureStrings(
@@ -569,7 +857,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "Не вдалося прочитати цю папку.",
         cloudOnlyHelp: "Зберігається в iCloud і не завантажено, тож тут не займає місця.",
         collapsedHelp: "Маленька папка: її вміст враховано, але не показано на мапі.",
-        scanFailed: "Не вдалося прочитати це розташування."
+        scanFailed: "Не вдалося прочитати це розташування.",
+        quickLook: "Швидкий перегляд",
+        openInTerminal: "Відкрити в Терміналі",
+        mark: "Позначити для Смітника",
+        unmark: "Зняти позначку",
+        markAll: "Позначити все",
+        markedFormat: "Позначено: %@ · %@",
+        review: "Переглянути",
+        clearMarks: "Очистити",
+        trashManyTitleFormat: "Перемістити об’єкти (%@) у Смітник?",
+        movedFormat: "У Смітник переміщено %@",
+        undo: "Повернути",
+        openTrash: "Відкрити Смітник",
+        undoFailedFormat: "Не вдалося повернути «%@» на місце.",
+        suggestions: "Рекомендації",
+        suggestionsHint: "Папки, які інструменти розробки створюють заново самі. Їх можна видалити, поки проєкт не запущено.",
+        suggestionsEmpty: "Тут немає папок, які можна створити заново",
+        rebuildNodeModules: "Перевстановлюється через npm, yarn або pnpm",
+        rebuildDerivedData: "Xcode створить заново під час наступної збірки",
+        rebuildDartTool: "Створюється заново Dart і Flutter",
+        rebuildGradle: "Gradle завантажить заново",
+        rebuildPods: "Перевстановлюється через pod install",
+        rebuildPythonCache: "Python скомпілює заново",
+        rebuildWebCache: "Фреймворк створить заново під час збірки",
+        rebuildDeviceSupport: "Копіюється заново під час підключення пристрою"
     )
 
     static let zhHans = DiskAnalyzerFeatureStrings(
@@ -611,7 +923,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "无法读取此文件夹。",
         cloudOnlyHelp: "存储在 iCloud 中且未下载，因此在这里不占用空间。",
         collapsedHelp: "较小的文件夹：其内容已计入，但未在图中展开。",
-        scanFailed: "无法读取此位置。"
+        scanFailed: "无法读取此位置。",
+        quickLook: "快速查看",
+        openInTerminal: "在终端中打开",
+        mark: "标记以移到废纸篓",
+        unmark: "取消标记",
+        markAll: "全部标记",
+        markedFormat: "已标记 %@ 项 · %@",
+        review: "查看",
+        clearMarks: "清除",
+        trashManyTitleFormat: "要将 %@ 个项目移到废纸篓吗？",
+        movedFormat: "已将 %@ 移到废纸篓",
+        undo: "撤销",
+        openTrash: "打开废纸篓",
+        undoFailedFormat: "无法将“%@”放回原处。",
+        suggestions: "建议",
+        suggestionsHint: "开发工具会自行重新生成的文件夹。项目未运行时可以移除。",
+        suggestionsEmpty: "这里没有可重新生成的文件夹",
+        rebuildNodeModules: "由 npm、yarn 或 pnpm 重新安装",
+        rebuildDerivedData: "Xcode 会在下次构建时重新生成",
+        rebuildDartTool: "由 Dart 和 Flutter 重新生成",
+        rebuildGradle: "由 Gradle 重新下载",
+        rebuildPods: "由 pod install 重新安装",
+        rebuildPythonCache: "由 Python 重新编译",
+        rebuildWebCache: "由 Web 框架重新生成",
+        rebuildDeviceSupport: "连接设备时会重新拷贝"
     )
 
     static let zhTW = DiskAnalyzerFeatureStrings(
@@ -653,7 +989,31 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "無法讀取此資料夾。",
         cloudOnlyHelp: "儲存在 iCloud 且未下載，因此在這裡不佔用空間。",
         collapsedHelp: "較小的資料夾：其內容已計入，但未在圖中展開。",
-        scanFailed: "無法讀取此位置。"
+        scanFailed: "無法讀取此位置。",
+        quickLook: "快速查看",
+        openInTerminal: "在終端機中打開",
+        mark: "標記以丟到垃圾桶",
+        unmark: "取消標記",
+        markAll: "全部標記",
+        markedFormat: "已標記 %@ 項 · %@",
+        review: "檢視",
+        clearMarks: "清除",
+        trashManyTitleFormat: "要將 %@ 個項目丟到垃圾桶嗎？",
+        movedFormat: "已將 %@ 丟到垃圾桶",
+        undo: "還原",
+        openTrash: "打開垃圾桶",
+        undoFailedFormat: "無法將「%@」放回原處。",
+        suggestions: "建議",
+        suggestionsHint: "開發工具會自行重新產生的資料夾。專案未執行時可以移除。",
+        suggestionsEmpty: "這裡沒有可重新產生的資料夾",
+        rebuildNodeModules: "由 npm、yarn 或 pnpm 重新安裝",
+        rebuildDerivedData: "Xcode 會在下次建置時重新產生",
+        rebuildDartTool: "由 Dart 和 Flutter 重新產生",
+        rebuildGradle: "由 Gradle 重新下載",
+        rebuildPods: "由 pod install 重新安裝",
+        rebuildPythonCache: "由 Python 重新編譯",
+        rebuildWebCache: "由 Web 框架重新產生",
+        rebuildDeviceSupport: "連接裝置時會重新拷貝"
     )
 
     static let zhHK = DiskAnalyzerFeatureStrings(
@@ -695,6 +1055,30 @@ extension DiskAnalyzerFeatureStrings {
         unreadableHelp: "無法讀取此資料夾。",
         cloudOnlyHelp: "儲存在 iCloud 且未下載，因此在這裡不佔用空間。",
         collapsedHelp: "較小的資料夾：其內容已計入，但未在圖中展開。",
-        scanFailed: "無法讀取此位置。"
+        scanFailed: "無法讀取此位置。",
+        quickLook: "快速查看",
+        openInTerminal: "在終端機中打開",
+        mark: "標記以丟到垃圾桶",
+        unmark: "取消標記",
+        markAll: "全部標記",
+        markedFormat: "已標記 %@ 項 · %@",
+        review: "檢視",
+        clearMarks: "清除",
+        trashManyTitleFormat: "要將 %@ 個項目丟到垃圾桶嗎？",
+        movedFormat: "已將 %@ 丟到垃圾桶",
+        undo: "還原",
+        openTrash: "打開垃圾桶",
+        undoFailedFormat: "無法將「%@」放回原處。",
+        suggestions: "建議",
+        suggestionsHint: "開發工具會自行重新產生的資料夾。專案未執行時可以移除。",
+        suggestionsEmpty: "這裡沒有可重新產生的資料夾",
+        rebuildNodeModules: "由 npm、yarn 或 pnpm 重新安裝",
+        rebuildDerivedData: "Xcode 會在下次建置時重新產生",
+        rebuildDartTool: "由 Dart 和 Flutter 重新產生",
+        rebuildGradle: "由 Gradle 重新下載",
+        rebuildPods: "由 pod install 重新安裝",
+        rebuildPythonCache: "由 Python 重新編譯",
+        rebuildWebCache: "由 Web 框架重新產生",
+        rebuildDeviceSupport: "連接裝置時會重新拷貝"
     )
 }

@@ -5,7 +5,9 @@ import SwiftUI
 
 /// Colours for the map. Hue follows a segment's position around the circle,
 /// so a folder and everything inside it share a family of colours, and the
-/// whole wheel re-spreads smoothly as the chart zooms.
+/// whole wheel re-spreads smoothly as the chart zooms. The sweep runs from
+/// violet through blue, green and yellow to orange and never reaches red,
+/// which stays reserved for items marked to go to the Trash.
 enum SunburstPalette {
     static func color(for kind: DiskNode.Kind, mid: Double, depth: Double,
                       dark: Bool, highlighted: Bool = false) -> Color {
@@ -15,7 +17,7 @@ enum SunburstPalette {
         case .hidden:
             return Color(white: dark ? 0.27 : 0.55).opacity(highlighted ? 1 : 0.9)
         case .directory, .file:
-            let hue = (0.58 + mid * 0.86).truncatingRemainder(dividingBy: 1)
+            let hue = 0.82 - min(1, max(0, mid)) * 0.74
             let level = max(0, depth - 1)
             var saturation = (dark ? 0.66 : 0.58) - level * 0.055
             var brightness = (dark ? 0.86 : 0.90) - level * (dark ? 0.045 : 0.02)
@@ -42,6 +44,8 @@ struct SunburstChart: View {
     let centerDetail: String
     let centerCaption: String
     let canGoUp: Bool
+    let selected: DiskNode?
+    let marked: [DiskNode]
     @Binding var hovered: DiskNode?
     let onSelect: (DiskNode) -> Void
     let onUp: () -> Void
@@ -71,7 +75,8 @@ struct SunburstChart: View {
             let geometry = SunburstGeometry(radius: size / 2 - 6, rings: Self.rings)
             ZStack {
                 SunburstCanvas(drawing: drawing(), progress: progress, geometry: geometry,
-                               hovered: hovered, dark: scheme == .dark)
+                               hovered: hovered, selected: selected,
+                               marked: Set(marked.map(ObjectIdentifier.init)), dark: scheme == .dark)
                     .frame(width: size, height: size)
                 centerLabel(radius: geometry.centerRadius)
             }
@@ -293,6 +298,9 @@ private struct SunburstCanvas: View, Animatable {
     var progress: Double
     let geometry: SunburstGeometry
     let hovered: DiskNode?
+    let selected: DiskNode?
+    /// Items set aside for the Trash; everything inside them is tinted too.
+    let marked: Set<ObjectIdentifier>
     let dark: Bool
 
     var animatableData: Double {
@@ -327,8 +335,11 @@ private struct SunburstCanvas: View, Animatable {
                 guard outer - inner > 0.5, span > 0.0005 else { continue }
                 let fade = min(1, max(0, rings + 1 - depth))
                 let highlighted = hovered === arc.node
-                let color = SunburstPalette.color(for: arc.node.kind, mid: (mapped.start + mapped.end) / 2,
+                var color = SunburstPalette.color(for: arc.node.kind, mid: (mapped.start + mapped.end) / 2,
                                                   depth: max(1, depth), dark: dark, highlighted: highlighted)
+                if !marked.isEmpty, isMarked(arc.node) {
+                    color = Color.red.opacity(highlighted ? 0.85 : 0.6)
+                }
                 let path = Self.segment(center: center, inner: inner, outer: outer,
                                         start: mapped.start, end: mapped.end)
                 context.fill(path, with: .color(color.opacity(fade)), style: FillStyle(eoFill: true))
@@ -343,6 +354,14 @@ private struct SunburstCanvas: View, Animatable {
                                    Self.point(center: center, radius: mid, angle: (mapped.start + mapped.end) / 2),
                                    min(room * 0.8, 120), outer - inner))
                 }
+            }
+            if let selected, let arc = drawing.arcs.first(where: { $0.node === selected }), drawing.depthShift == 0,
+               let mapped = DiskAnalyzerSupport.zoomed(start: arc.start, end: arc.end, window: drawing.window,
+                                                       progress: progress) {
+                let path = Self.segment(center: center, inner: geometry.edge(Double(arc.depth) - 1),
+                                        outer: geometry.edge(Double(arc.depth)),
+                                        start: mapped.start, end: mapped.end)
+                context.stroke(path, with: .color(.accentColor), lineWidth: 3)
             }
             if let hovered, let arc = drawing.arcs.first(where: { $0.node === hovered }), drawing.depthShift == 0,
                let mapped = DiskAnalyzerSupport.zoomed(start: arc.start, end: arc.end, window: drawing.window,
@@ -360,7 +379,10 @@ private struct SunburstCanvas: View, Animatable {
                 let text = context.resolve(Text(name)
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(dark ? .white.opacity(0.92) : .black.opacity(0.78)))
-                let measured = text.measure(in: CGSize(width: width, height: height))
+                // Unbounded, so a long name reports its real width instead of
+                // a wrapped one that would then be drawn at full length.
+                let measured = text.measure(in: CGSize(width: CGFloat.greatestFiniteMagnitude,
+                                                       height: CGFloat.greatestFiniteMagnitude))
                 guard measured.width <= width, measured.height <= height else { continue }
                 let frame = CGRect(x: point.x - measured.width / 2, y: point.y - measured.height / 2,
                                    width: measured.width, height: measured.height).insetBy(dx: -3, dy: -2)
@@ -369,6 +391,16 @@ private struct SunburstCanvas: View, Animatable {
                 context.draw(text, at: point)
             }
         }
+    }
+
+    /// The item, or a folder holding it, is marked for the Trash.
+    private func isMarked(_ node: DiskNode) -> Bool {
+        var current: DiskNode? = node
+        while let step = current {
+            if marked.contains(ObjectIdentifier(step)) { return true }
+            current = step.parent
+        }
+        return false
     }
 
     /// Clockwise from twelve o'clock, as fractions of a turn.
